@@ -1,22 +1,29 @@
 package repository
 
 import (
+	"context"
 	"log"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/category"
+	"github.com/zakiyalmaya/online-store/infrastructure/repository/customer"
 )
 
 type Repositories struct {
 	db       *sqlx.DB
+	RedCl    *redis.Client
 	Category category.Repository
+	Customer customer.Repository
 }
 
-func NewRespository(db *sqlx.DB) *Repositories {
+func NewRespository(db *sqlx.DB, redcl *redis.Client) *Repositories {
 	return &Repositories{
 		db: db,
+		RedCl: redcl,
 		Category: category.NewCategoryRepository(db),
+		Customer: customer.NewCustomerRepository(db),
 	}
 }
 
@@ -147,4 +154,20 @@ func createTableTransactionDetails(db *sqlx.DB) {
 	if err != nil {
 		log.Panicln("error creating table transaction_details: ", err.Error())
 	}
+}
+
+func RedisClient() *redis.Client {
+	option := &redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	}
+
+	redcl := redis.NewClient(option)
+	if err := redcl.Ping(context.Background()).Err(); err != nil {
+		log.Panicln("error connect to redis: ", err.Error())
+		return nil
+	}
+
+	return redcl
 }

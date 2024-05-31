@@ -10,9 +10,10 @@ import (
 func main() {
 	// instatiate repository
 	db := repository.DBConnection()
+	redcl := repository.RedisClient()
 	defer db.Close()
 
-	repository := repository.NewRespository(db)
+	repository := repository.NewRespository(db, redcl)
 
 	// instantiate application
 	application := application.NewApplication(repository)
@@ -21,7 +22,7 @@ func main() {
 	r := fiber.New()
 
 	// instantiate transport
-	transport.Handler(application, r)
+	transport.Handler(application, redcl, r)
 
 	r.Listen(":3000")
 }
