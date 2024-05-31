@@ -11,7 +11,7 @@ type categoryRepoImpl struct {
 	db *sqlx.DB
 }
 
-func NewCategoryRepository(db *sqlx.DB) CategoryRepository {
+func NewCategoryRepository(db *sqlx.DB) Repository {
 	return &categoryRepoImpl{db: db}
 }
 
@@ -50,4 +50,17 @@ func (c *categoryRepoImpl) GetAll() ([]*model.CategoryEntity, error) {
 	}
 
 	return categories, nil
+}
+
+func (c *categoryRepoImpl) GetByID(id int) (*model.CategoryEntity, error) {
+	category := &model.CategoryEntity{}
+	query := "SELECT id, name, created_at, updated_at FROM categories WHERE id = ?"
+
+	err := c.db.Get(category, query, id)
+	if err != nil {
+		log.Println("errorRepository: ", err.Error())
+		return nil, err
+	}
+
+	return category, nil
 }

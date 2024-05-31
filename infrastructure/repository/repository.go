@@ -5,15 +5,18 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/zakiyalmaya/online-store/infrastructure/repository/category"
 )
 
 type Repositories struct {
-	db  *sqlx.DB
+	db       *sqlx.DB
+	Category category.Repository
 }
 
 func NewRespository(db *sqlx.DB) *Repositories {
 	return &Repositories{
-		db:        db,
+		db: db,
+		Category: category.NewCategoryRepository(db),
 	}
 }
 
@@ -65,12 +68,12 @@ func createTableCategories(db *sqlx.DB) {
 
 func createTableProduct(db *sqlx.DB) {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS customers (
-		id INT PRIMARY KEY AUTO_INCREMENT,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name VARCHAR(255) NOT NULL,
 		description TEXT NULL,
 		price DECIMAL(10, 2) NOT NULL,
 		stock_quantity INT NOT NULL,
-		category_id INT NOT NULL,
+		category_id INTEGER NOT NULL,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (category_id) REFERENCES categories(id)
@@ -82,7 +85,7 @@ func createTableProduct(db *sqlx.DB) {
 
 func createTableShoppingCart(db *sqlx.DB) {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS shopping_carts (
-		id INT PRIMARY KEY AUTO_INCREMENT,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		customer_id INT NOT NULL,
 		status int NOT NULL,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -94,13 +97,12 @@ func createTableShoppingCart(db *sqlx.DB) {
 	}
 }
 
-
 func createTableCartItems(db *sqlx.DB) {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS cart_items (
-		id INT PRIMARY KEY AUTO_INCREMENT,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		shopping_cart_id INT NOT NULL,
-		product_id INT NOT NULL,
-		quantity INT NOT NULL,
+		product_id INTEGER NOT NULL,
+		quantity INTEGER NOT NULL,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (shopping_cart_id) REFERENCES shopping_carts(id),
@@ -113,11 +115,11 @@ func createTableCartItems(db *sqlx.DB) {
 
 func createTableTransaction(db *sqlx.DB) {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS transactios (
-		id INT PRIMARY KEY AUTO_INCREMENT,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		idempotency_key VARCHAR(255) UNIQUE NOT NULL,
 		shopping_cart_id INT NOT NULL,
 		customer_id INT NOT NULL,
-		status INT NOT NULL,
+		status INTEGER NOT NULL,
 		total_amount DECIMAL(10, 2) NOT NULL,
 		payment_method INT NOT NULL,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -132,10 +134,10 @@ func createTableTransaction(db *sqlx.DB) {
 
 func createTableTransactionDetails(db *sqlx.DB) {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS transactio_details (
-		id INT PRIMARY KEY AUTO_INCREMENT,
-		transaction_id INT NOT NULL,
-		product_id INT NOT NULL,
-		quantity INT NOT NULL,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		transaction_id INTEGER NOT NULL,
+		product_id INTEGER NOT NULL,
+		quantity INTEGER NOT NULL,
 		price DECIMAL(10, 2) NOT NULL,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
