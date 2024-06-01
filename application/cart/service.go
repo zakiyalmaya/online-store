@@ -7,4 +7,5 @@ import (
 type Service interface {
 	Create(request *model.CreateCartRequest) (*model.CartResponse, error)
 	GetByParams(request *model.GetCartRequest) ([]*model.CartResponse, error)
+	Delete(request *model.DeleteCartRequest) error
 }

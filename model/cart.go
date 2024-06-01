@@ -58,6 +58,13 @@ type CartItemResponse struct {
 	Price       float64 `json:"price"`
 }
 
+type DeleteCartRequest struct {
+	ID         int
+	CartItemID int
+	CustomerID int
+	Status     cartEnum.Status
+}
+
 func (c *CreateCartRequest) ToEntity() *CartEntity {
 	cartItemEntity := make([]*CartItemEntity, len(c.Items))
 	for i, item := range c.Items {

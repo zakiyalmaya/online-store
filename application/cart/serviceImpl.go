@@ -66,34 +66,34 @@ func (c *cartSvcImpl) Create(request *model.CreateCartRequest) (*model.CartRespo
 
 func (c *cartSvcImpl) checkProductExist(cart *model.CreateCartRequest) error {
 	var wg sync.WaitGroup
-    errorCh := make(chan error, len(cart.Items))
+	errorCh := make(chan error, len(cart.Items))
 
-    for _, item := range cart.Items {
-        wg.Add(1)
+	for _, item := range cart.Items {
+		wg.Add(1)
 
-        go func(productID int) {
-            defer wg.Done()
+		go func(productID int) {
+			defer wg.Done()
 
-            _, err := c.repos.Product.GetByID(productID)
-            if err != nil {
-                if err == sql.ErrNoRows {
-                    errorCh <- fmt.Errorf("product not found: %d", productID)
-                    return
-                }
-                errorCh <- fmt.Errorf("error getting product by id: %d, %v", productID, err)
-                return
-            }
-        }(item.ProductID)
-    }
+			_, err := c.repos.Product.GetByID(productID)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					errorCh <- fmt.Errorf("product not found: %d", productID)
+					return
+				}
+				errorCh <- fmt.Errorf("error getting product by id: %d, %v", productID, err)
+				return
+			}
+		}(item.ProductID)
+	}
 
-    wg.Wait()
-    close(errorCh)
+	wg.Wait()
+	close(errorCh)
 
-    for err := range errorCh {
-        if err != nil {
-            return err
-        }
-    }
+	for err := range errorCh {
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
@@ -110,4 +110,24 @@ func (c *cartSvcImpl) GetByParams(request *model.GetCartRequest) ([]*model.CartR
 	}
 
 	return cartsResponse, nil
+}
+
+func (c *cartSvcImpl) Delete(request *model.DeleteCartRequest) error {
+	// check cart item existence
+	cartItem, err := c.repos.Cart.GetItemByID(request.CartItemID)
+	if err != nil {
+		return fmt.Errorf("error getting cart item by id")
+	}
+
+	// delete the product from the cart if the cart status is active
+	if err := c.repos.Cart.Delete(&model.DeleteCartRequest{
+		ID:         cartItem.CartID,
+		CartItemID: cartItem.ID,
+		CustomerID: request.CustomerID,
+		Status:     cartEnum.CartStatusActive,
+	}); err != nil {
+		return fmt.Errorf("error deleting cart item")
+	}
+
+	return nil
 }

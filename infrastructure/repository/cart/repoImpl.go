@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/jmoiron/sqlx"
@@ -66,7 +67,7 @@ func (c *cartRepoImpl) getByID(id int) (*model.CartEntity, error) {
 	}
 
 	items := []*model.CartItemEntity{}
-	query = "SELECT ci.id, ci.shopping_cart_id, ci.product_id, ci.quantity, p.price, p.name AS product_name FROM cart_items AS ci JOIN products AS p ON ci.product_id = p.id WHERE shopping_cart_id = ?"
+	query = "SELECT ci.id, ci.shopping_cart_id, ci.product_id, ci.quantity, p.price, p.name AS product_name FROM cart_items AS ci JOIN products AS p ON ci.product_id = p.id WHERE shopping_cart_id = ? ORDER BY ci.id"
 	err = c.db.Select(&items, query, id)
 	if err != nil {
 		log.Println("errorRepository: ", err.Error())
@@ -92,6 +93,7 @@ func (c *cartRepoImpl) GetByParams(request *model.GetCartRequest) ([]*model.Cart
 		params = append(params, request.Status)
 	}
 
+	query += " ORDER BY id"
 	res, err := c.db.Queryx(query, params...)
 	if err != nil {
 		log.Println("errorRepository: ", err.Error())
@@ -113,7 +115,7 @@ func (c *cartRepoImpl) GetByParams(request *model.GetCartRequest) ([]*model.Cart
 
 	for _, cart := range carts {
 		items := []*model.CartItemEntity{}
-		query = "SELECT ci.id, ci.shopping_cart_id, ci.product_id, ci.quantity, p.price, p.name AS product_name FROM cart_items AS ci JOIN products AS p ON ci.product_id = p.id WHERE shopping_cart_id = ?"
+		query = "SELECT ci.id, ci.shopping_cart_id, ci.product_id, ci.quantity, p.price, p.name AS product_name FROM cart_items AS ci JOIN products AS p ON ci.product_id = p.id WHERE shopping_cart_id = ? ORDER BY ci.id"
 		res, err = c.db.Queryx(query, cart.ID)
 		if err != nil {
 			log.Println("errorRepository: ", err.Error())
@@ -163,4 +165,58 @@ func (c *cartRepoImpl) Upsert(cartID int, items []*model.CartItemEntity) (*model
 	}
 
 	return c.getByID(int(cartID))
+}
+
+func (c *cartRepoImpl) Delete(request *model.DeleteCartRequest) error {
+tx, err := c.db.Beginx()
+    if err != nil {
+		log.Println("errorRepository: ", err.Error())
+        return err
+    }
+
+    res, err := c.db.Exec(`
+        DELETE FROM cart_items
+        WHERE id = ? 
+        AND EXISTS (SELECT 1 FROM shopping_carts WHERE id = ? AND status = ? AND customer_id = ?)
+    `, request.CartItemID, request.ID, request.Status, request.CustomerID)
+    if err != nil {
+        tx.Rollback()
+		log.Println("errorRepository: ", err.Error())
+        return err
+    }
+
+    affected, err := res.RowsAffected()
+    if err != nil {
+        tx.Rollback()
+		log.Println("errorRepository: ", err.Error())
+        return err
+    }
+
+    if affected == 0 {
+        tx.Rollback()
+		err := fmt.Errorf("no active cart found with cart_item_id: %d", request.CartItemID)
+		log.Println("errorRepository: ", err.Error())
+        return err
+    }
+
+    err = tx.Commit()
+    if err != nil {
+        tx.Rollback()
+		log.Println("errorRepository: ", err.Error())
+        return err
+    }
+
+	return nil
+}
+
+func (c *cartRepoImpl) GetItemByID(cartItemID int) (*model.CartItemEntity, error) {
+	cartItem := &model.CartItemEntity{}
+	query := "SELECT id, shopping_cart_id, product_id, quantity FROM cart_items WHERE id = ?"
+	err := c.db.Get(cartItem, query, cartItemID)
+	if err != nil {
+		log.Println("errorRepository: ", err.Error())
+		return nil, err
+	}
+
+	return cartItem, nil
 }
