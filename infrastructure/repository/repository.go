@@ -7,6 +7,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/zakiyalmaya/online-store/infrastructure/repository/cart"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/category"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/customer"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/product"
@@ -18,6 +19,7 @@ type Repositories struct {
 	Category category.Repository
 	Customer customer.Repository
 	Product  product.Repository
+	Cart     cart.Repository
 }
 
 func NewRespository(db *sqlx.DB, redcl *redis.Client) *Repositories {
@@ -27,6 +29,7 @@ func NewRespository(db *sqlx.DB, redcl *redis.Client) *Repositories {
 		Category: category.NewCategoryRepository(db),
 		Customer: customer.NewCustomerRepository(db),
 		Product:  product.NewProductRepository(db),
+		Cart:     cart.NewCartRepository(db),
 	}
 }
 
@@ -44,6 +47,7 @@ func DBConnection() *sqlx.DB {
 	createTableCartItems(db)
 	createTableTransaction(db)
 	createTableTransactionDetails(db)
+	createIndexTabelCartItems(db)
 	return db
 }
 
@@ -156,6 +160,13 @@ func createTableTransactionDetails(db *sqlx.DB) {
 	)`)
 	if err != nil {
 		log.Panicln("error creating table transaction_details: ", err.Error())
+	}
+}
+
+func createIndexTabelCartItems(db *sqlx.DB) {
+	_, err := db.Exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_product_cart ON cart_items (product_id, shopping_cart_id)`)
+	if err != nil {
+		log.Panicln("error creating index cart_items: ", err.Error())
 	}
 }
 

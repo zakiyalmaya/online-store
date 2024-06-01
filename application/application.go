@@ -1,6 +1,7 @@
 package application
 
 import (
+	"github.com/zakiyalmaya/online-store/application/cart"
 	"github.com/zakiyalmaya/online-store/application/category"
 	"github.com/zakiyalmaya/online-store/application/customer"
 	"github.com/zakiyalmaya/online-store/application/product"
@@ -11,6 +12,7 @@ type Application struct {
 	CategorySvc category.Service
 	CustomerSvc customer.Service
 	ProductSvc  product.Service
+	CartSvc     cart.Service
 }
 
 func NewApplication(repos *repository.Repositories) *Application {
@@ -18,5 +20,6 @@ func NewApplication(repos *repository.Repositories) *Application {
 		CategorySvc: category.NewCategoryService(repos),
 		CustomerSvc: customer.NewCustomerService(repos),
 		ProductSvc:  product.NewProductService(repos),
+		CartSvc:     cart.NewCartService(repos),
 	}
 }

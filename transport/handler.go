@@ -20,4 +20,7 @@ func Handler(application *application.Application, redcl *redis.Client, r *fiber
 
 	r.Get("/products", middleware.AuthMiddleware(redcl), ctrl.Product.GetAll)
 	r.Post("/product", middleware.AuthMiddleware(redcl), ctrl.Product.Create)
+
+	r.Get("/carts", middleware.AuthMiddleware(redcl), ctrl.Cart.GetAll)
+	r.Post("/cart", middleware.AuthMiddleware(redcl), ctrl.Cart.Add)
 }
