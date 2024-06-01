@@ -9,6 +9,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/category"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/customer"
+	"github.com/zakiyalmaya/online-store/infrastructure/repository/product"
 )
 
 type Repositories struct {
@@ -16,14 +17,16 @@ type Repositories struct {
 	RedCl    *redis.Client
 	Category category.Repository
 	Customer customer.Repository
+	Product  product.Repository
 }
 
 func NewRespository(db *sqlx.DB, redcl *redis.Client) *Repositories {
 	return &Repositories{
-		db: db,
-		RedCl: redcl,
+		db:       db,
+		RedCl:    redcl,
 		Category: category.NewCategoryRepository(db),
 		Customer: customer.NewCustomerRepository(db),
+		Product:  product.NewProductRepository(db),
 	}
 }
 
@@ -74,7 +77,7 @@ func createTableCategories(db *sqlx.DB) {
 }
 
 func createTableProduct(db *sqlx.DB) {
-	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS customers (
+	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS products (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name VARCHAR(255) NOT NULL,
 		description TEXT NULL,
@@ -121,7 +124,7 @@ func createTableCartItems(db *sqlx.DB) {
 }
 
 func createTableTransaction(db *sqlx.DB) {
-	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS transactios (
+	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS transactions (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		idempotency_key VARCHAR(255) UNIQUE NOT NULL,
 		shopping_cart_id INT NOT NULL,
@@ -140,7 +143,7 @@ func createTableTransaction(db *sqlx.DB) {
 }
 
 func createTableTransactionDetails(db *sqlx.DB) {
-	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS transactio_details (
+	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS transaction_details (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		transaction_id INTEGER NOT NULL,
 		product_id INTEGER NOT NULL,
