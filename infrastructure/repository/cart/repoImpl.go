@@ -115,7 +115,7 @@ func (c *cartRepoImpl) GetByParams(request *model.GetCartRequest) ([]*model.Cart
 
 	for _, cart := range carts {
 		items := []*model.CartItemEntity{}
-		query = "SELECT ci.id, ci.shopping_cart_id, ci.product_id, ci.quantity, p.price, p.name AS product_name FROM cart_items AS ci JOIN products AS p ON ci.product_id = p.id WHERE shopping_cart_id = ? ORDER BY ci.id"
+		query = "SELECT ci.id, ci.shopping_cart_id, ci.product_id, ci.quantity, p.price, p.name AS product_name FROM cart_items AS ci JOIN products AS p ON ci.product_id = p.id WHERE shopping_cart_id = ? ORDER BY ci.id DESC"
 		res, err = c.db.Queryx(query, cart.ID)
 		if err != nil {
 			log.Println("errorRepository: ", err.Error())
