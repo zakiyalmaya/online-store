@@ -8,6 +8,23 @@ This application is build using clean architecture and the following tech stack:
 - NoSQL: **Redis**
 
 ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
+1. Table
+    - **customers**: Contains customer details.
+    - **categories**: Contains product category details.
+    - **products**: Contains product details.
+    - **shopping_carts**: Contains shopping cart details.
+    - **cart_items**: Contains items in the shopping cart.
+    - **transactions**: Contains transaction details when a customer checks out.
+    - **transaction_details**: Contains details of each product in a transaction.
+
+2. Relationships
+    - **customers** to **shopping_carts**: One customer can have multiple shopping carts.
+    - **shopping_carts** to **cart_items**: One shopping cart can contain multiple cart items.
+    - **cart_items** to **products**: Each cart item is linked to one product.
+    - **products** to **categories**: Each product belongs to one category.
+    - **shopping_carts** to **transactions**: One shopping cart can be associated with one transaction upon checkout.
+    - **transactions** to **transaction_details**: One transaction can have multiple transaction details.
+    - **transaction_details** to **products**: Each transaction detail is linked to one product.
 
 `config.go` is a configuration file that contains credential database values used by the application.
 
@@ -35,7 +52,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 1. Register 
 
-`POST /customer`
+    `POST /customer`
 
     ```sh
     curl --location 'http://localhost:3000/customer' \
@@ -92,7 +109,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 2. Login
 
-`POST /customer/login`
+    `POST /customer/login`
 
     ```sh
     curl --location 'http://localhost:3000/customer/login' \
@@ -143,7 +160,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 3. Logout
 
-`POST /customer/logout`
+    `POST /customer/logout`
 
     ```sh
     curl --location --request POST 'http://localhost:3000/customer/logout' \
@@ -182,7 +199,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 1. Create
 
-`POST /category`
+    `POST /category`
 
     ```sh
     curl --location 'http://localhost:3000/category' \
@@ -229,7 +246,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 2. Get All
 
-`GET /categories`
+    `GET /categories`
 
     ```sh
     curl --location 'http://localhost:3000/categories' \
@@ -275,7 +292,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 1. Create
 
-`POST /product`
+    `POST /product`
 
     ```sh
     curl --location 'http://localhost:3000/product' \
@@ -330,7 +347,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 2. Get All
 
-`GET /products`
+    `GET /products`
 
     ```sh
     curl --location 'http://localhost:3000/products' \
@@ -379,7 +396,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 1. Create
 
-`POST /cart`
+    `POST /cart`
 
     ```sh
     curl --location 'http://localhost:3000/cart' \
@@ -460,7 +477,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 2. Get All By Customer
 
-`GET /carts`
+    `GET /carts`
 
     ```sh
     curl --location 'http://localhost:3000/carts?status=1' \
@@ -529,7 +546,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 3. Delete cart item By ID
 
-`DELETE /cart/{id}`
+    `DELETE /cart/{id}`
 
     ```sh
     curl --location 'http://localhost:3000/cart/1' \
@@ -567,7 +584,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 1. Checkout
 
-`POST /transaction`
+    `POST /transaction`
 
     ```sh
     curl --location 'http://localhost:3000/transaction' \
@@ -648,7 +665,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 2. Get By ID
 
-`GET /transaction`
+    `GET /transaction`
 
     ```sh
     curl --location 'http://localhost:3000/transaction?id=3' \
