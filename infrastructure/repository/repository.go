@@ -7,6 +7,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/zakiyalmaya/online-store/config"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/cart"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/category"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/customer"
@@ -37,7 +38,7 @@ func NewRespository(db *sqlx.DB, redcl *redis.Client) *Repositories {
 }
 
 func DBConnection() *sqlx.DB {
-	db, err := sqlx.Open("sqlite3", "./online_store.db")
+	db, err := sqlx.Open("sqlite3", config.DATABASE_NAME)
 	if err != nil {
 		log.Panicln("error connecting to database: ", err.Error())
 		return nil
@@ -175,8 +176,8 @@ func createIndexTabelCartItems(db *sqlx.DB) {
 
 func RedisClient() *redis.Client {
 	option := &redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
+		Addr:     config.REDIS_HOST + ":" + config.REDIS_PORT,
+		Password: config.REDIS_PASS,
 		DB:       0,
 	}
 

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/zakiyalmaya/online-store/application"
+	"github.com/zakiyalmaya/online-store/config"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository"
 	"github.com/zakiyalmaya/online-store/transport"
 )
@@ -24,5 +25,5 @@ func main() {
 	// instantiate transport
 	transport.Handler(application, redcl, r)
 
-	r.Listen(":3000")
+	r.Listen(config.APP_PORT)
 }

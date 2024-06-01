@@ -9,6 +9,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
+	"github.com/zakiyalmaya/online-store/config"
 	"github.com/zakiyalmaya/online-store/model"
 )
 
@@ -26,7 +27,7 @@ func AuthMiddleware(redcl *redis.Client) fiber.Handler {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fiber.NewError(http.StatusUnauthorized, "Invalid signing method")
 			}
-			return []byte("online-store-secret"), nil
+			return []byte(config.SECRET_KEY), nil
 		})
 
 		if err != nil || !token.Valid {
@@ -51,7 +52,7 @@ func AuthMiddleware(redcl *redis.Client) fiber.Handler {
 		c.Locals("user_id", int(userID))
 
 		// Check the token in Redis cache
-		tokenCache, err := redcl.Get(context.Background(), "jwt-token-"+username).Result()
+		tokenCache, err := redcl.Get(context.Background(), config.JWT_PREFIX+username).Result()
 		if err != nil {
 			log.Println("Redis error:", err)
 			return c.Status(http.StatusUnauthorized).JSON(model.HTTPErrorResponse("Invalid or expired token"))
