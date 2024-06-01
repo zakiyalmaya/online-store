@@ -4,14 +4,16 @@ type Status int
 
 const (
 	CartStatusActive Status = iota + 1
+	CartStatusPending
 	CartStatusCompleted
 	CartStatusCancelled
 )
 
 var mapCartStatus = map[Status]string{
-	CartStatusActive:    "Active",
-	CartStatusCompleted: "Completed",
-	CartStatusCancelled: "Cancelled",
+	CartStatusActive:    "ACTIVE",
+	CartStatusPending:   "PENDING",
+	CartStatusCompleted: "COMPLETED",
+	CartStatusCancelled: "CANCELLED",
 }
 
 func (s Status) Enum() string {
@@ -19,5 +21,5 @@ func (s Status) Enum() string {
 		return val
 	}
 
-	return "Unknown"
+	return "UNKNOWN"
 }

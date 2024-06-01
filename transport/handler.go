@@ -24,4 +24,7 @@ func Handler(application *application.Application, redcl *redis.Client, r *fiber
 	r.Get("/carts", middleware.AuthMiddleware(redcl), ctrl.Cart.GetAll)
 	r.Post("/cart", middleware.AuthMiddleware(redcl), ctrl.Cart.Create)
 	r.Delete("/cart/:cart_item_id", middleware.AuthMiddleware(redcl), ctrl.Cart.Delete)
+
+	r.Post("/transaction", middleware.AuthMiddleware(redcl), ctrl.Transaction.Checkout)
+	r.Get("/transaction", middleware.AuthMiddleware(redcl), ctrl.Transaction.GetByID)
 }

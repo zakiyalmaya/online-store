@@ -67,8 +67,8 @@ func (c *cartRepoImpl) getByID(id int) (*model.CartEntity, error) {
 	}
 
 	items := []*model.CartItemEntity{}
-	query = "SELECT ci.id, ci.shopping_cart_id, ci.product_id, ci.quantity, p.price, p.name AS product_name FROM cart_items AS ci JOIN products AS p ON ci.product_id = p.id WHERE shopping_cart_id = ? ORDER BY ci.id"
-	err = c.db.Select(&items, query, id)
+	queryItem := "SELECT ci.id, ci.shopping_cart_id, ci.product_id, ci.quantity, p.price, p.name AS product_name FROM cart_items AS ci JOIN products AS p ON ci.product_id = p.id WHERE shopping_cart_id = ? ORDER BY ci.id"
+	err = c.db.Select(&items, queryItem, id)
 	if err != nil {
 		log.Println("errorRepository: ", err.Error())
 		return nil, err
@@ -219,4 +219,8 @@ func (c *cartRepoImpl) GetItemByID(cartItemID int) (*model.CartItemEntity, error
 	}
 
 	return cartItem, nil
+}
+
+func (c *cartRepoImpl) GetByID(cartID int) (*model.CartEntity, error) {
+	return c.getByID(cartID)
 }

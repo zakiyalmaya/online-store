@@ -8,4 +8,5 @@ type Repository interface {
 	Upsert(cartID int, items []*model.CartItemEntity) (*model.CartEntity, error)
 	Delete(request *model.DeleteCartRequest) error
 	GetItemByID(cartItemID int) (*model.CartItemEntity, error)
+	GetByID(cartID int) (*model.CartEntity, error)
 }

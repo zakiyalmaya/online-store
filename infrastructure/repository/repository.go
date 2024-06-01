@@ -11,25 +11,28 @@ import (
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/category"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/customer"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/product"
+	"github.com/zakiyalmaya/online-store/infrastructure/repository/transaction"
 )
 
 type Repositories struct {
-	db       *sqlx.DB
-	RedCl    *redis.Client
-	Category category.Repository
-	Customer customer.Repository
-	Product  product.Repository
-	Cart     cart.Repository
+	db          *sqlx.DB
+	RedCl       *redis.Client
+	Category    category.Repository
+	Customer    customer.Repository
+	Product     product.Repository
+	Cart        cart.Repository
+	Transaction transaction.Repository
 }
 
 func NewRespository(db *sqlx.DB, redcl *redis.Client) *Repositories {
 	return &Repositories{
-		db:       db,
-		RedCl:    redcl,
-		Category: category.NewCategoryRepository(db),
-		Customer: customer.NewCustomerRepository(db),
-		Product:  product.NewProductRepository(db),
-		Cart:     cart.NewCartRepository(db),
+		db:          db,
+		RedCl:       redcl,
+		Category:    category.NewCategoryRepository(db),
+		Customer:    customer.NewCustomerRepository(db),
+		Product:     product.NewProductRepository(db),
+		Cart:        cart.NewCartRepository(db),
+		Transaction: transaction.NewTransactionRepository(db),
 	}
 }
 
@@ -131,11 +134,11 @@ func createTableTransaction(db *sqlx.DB) {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS transactions (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		idempotency_key VARCHAR(255) UNIQUE NOT NULL,
-		shopping_cart_id INT NOT NULL,
-		customer_id INT NOT NULL,
+		shopping_cart_id INTEGER NOT NULL,
+		customer_id INTEGER NOT NULL,
 		status INTEGER NOT NULL,
 		total_amount DECIMAL(10, 2) NOT NULL,
-		payment_method INT NOT NULL,
+		payment_method INTEGER NOT NULL,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (shopping_cart_id) REFERENCES shopping_carts(id),
