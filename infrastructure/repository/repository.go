@@ -7,7 +7,6 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/zakiyalmaya/online-store/config"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/cart"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/category"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository/customer"
@@ -25,7 +24,7 @@ type Repositories struct {
 	Transaction transaction.Repository
 }
 
-func NewRespository(db *sqlx.DB, redcl *redis.Client) *Repositories {
+func NewRepository(db *sqlx.DB, redcl *redis.Client) *Repositories {
 	return &Repositories{
 		db:          db,
 		RedCl:       redcl,
@@ -37,11 +36,11 @@ func NewRespository(db *sqlx.DB, redcl *redis.Client) *Repositories {
 	}
 }
 
-func DBConnection() *sqlx.DB {
-	db, err := sqlx.Open("sqlite3", config.DATABASE_NAME)
+func DBConnection(sqlLite string) *sqlx.DB {
+	db, err := sqlx.Open("sqlite3", sqlLite)
 	if err != nil {
 		log.Panicln("error connecting to database: ", err.Error())
-		return nil
+		panic(err)
 	}
 
 	createTableCustomer(db)
@@ -174,17 +173,17 @@ func createIndexTabelCartItems(db *sqlx.DB) {
 	}
 }
 
-func RedisClient() *redis.Client {
+func RedisClient(redisHost, redisPort string) *redis.Client {
 	option := &redis.Options{
-		Addr:     config.REDIS_HOST + ":" + config.REDIS_PORT,
-		Password: config.REDIS_PASS,
+		Addr:     redisHost + ":" + redisPort,
+		Password: "",
 		DB:       0,
 	}
 
 	redcl := redis.NewClient(option)
 	if err := redcl.Ping(context.Background()).Err(); err != nil {
 		log.Panicln("error connect to redis: ", err.Error())
-		return nil
+		panic(err)
 	}
 
 	return redcl

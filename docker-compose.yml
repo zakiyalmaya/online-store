@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SQLITE_DB: /app/online_store.db  # Path to SQLite database file inside the container
+      APP_PORT: ":3000"  # Port for the Fiber application
+    volumes:
+      - .:/app  # Map current directory on host to /app in container
+      - ./online_store.db:/app/online_store.db  # Map ./online_store.db on host to /app/online_store.db in container
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:6.2
+    restart: always
+    ports:
+      - "6379:6379"  # Map port 6379 in container to port 6379 on the host

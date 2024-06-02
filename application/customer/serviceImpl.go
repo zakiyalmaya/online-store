@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/zakiyalmaya/online-store/config"
+	"github.com/zakiyalmaya/online-store/constant"
 	"github.com/zakiyalmaya/online-store/infrastructure/repository"
 	"github.com/zakiyalmaya/online-store/model"
 	"golang.org/x/crypto/bcrypt"
@@ -56,7 +56,7 @@ func (c *customerSvcImpl) Login(request *model.AuthRequest) (*model.AuthResponse
 		return nil, fmt.Errorf("wrong password")
 	}
 
-	duration := config.SESSION_EXPIRE
+	duration := constant.SessionExpire
 	expirationTime := time.Now().Add(duration)
 	claims := &model.AuthClaims{
 		UserID:   response.ID,
@@ -67,12 +67,12 @@ func (c *customerSvcImpl) Login(request *model.AuthRequest) (*model.AuthResponse
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(config.SECRET_KEY))
+	tokenString, err := token.SignedString([]byte(constant.SecretKey))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create token")
 	}
 
-	err = c.repos.RedCl.Set(context.Background(), config.JWT_PREFIX+response.Username, tokenString, duration).Err()
+	err = c.repos.RedCl.Set(context.Background(), constant.JWTPrefix+response.Username, tokenString, duration).Err()
 	if err != nil {
 		log.Println("Failed to store token in Redis:", err.Error())
 		return nil, fmt.Errorf("failed to store token in Redis")
@@ -86,7 +86,7 @@ func (c *customerSvcImpl) Login(request *model.AuthRequest) (*model.AuthResponse
 }
 
 func (c *customerSvcImpl) Logout(username string) error {
-	if err := c.repos.RedCl.Del(context.Background(), config.JWT_PREFIX+username).Err(); err != nil {
+	if err := c.repos.RedCl.Del(context.Background(), constant.JWTPrefix+username).Err(); err != nil {
 		log.Println("Failed to delete token from Redis:", err.Error())
 		return fmt.Errorf("failed to delete token from Redis")
 	}
