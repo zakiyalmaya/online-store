@@ -17,7 +17,7 @@ func NewProductService(repos *repository.Repositories) Service {
 	return &productSvcImpl{repos: repos}
 }
 
-func (p *productSvcImpl) Create(request *model.ProductRequest) error {
+func (p *productSvcImpl) Create(request *model.CreateProductRequest) error {
 	category, err := p.repos.Category.GetByID(request.CategoryID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -40,8 +40,8 @@ func (p *productSvcImpl) Create(request *model.ProductRequest) error {
 	return nil
 }
 
-func (p *productSvcImpl) GetAll(categoryID *int) ([]*model.ProductResponse, error) {
-	products, err := p.repos.Product.GetAll(categoryID)
+func (p *productSvcImpl) GetAll(request *model.GetProductRequest) ([]*model.ProductResponse, error) {
+	products, err := p.repos.Product.GetAll(request)
 	if err != nil {
 		return nil, fmt.Errorf("error getting all products")
 	}

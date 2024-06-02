@@ -1,8 +1,6 @@
 package product
 
 import (
-	"strconv"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/zakiyalmaya/online-store/application/product"
 	"github.com/zakiyalmaya/online-store/model"
@@ -18,18 +16,12 @@ func NewProductController(productSvc product.Service) *Controller {
 }
 
 func (c *Controller) GetAll(ctx *fiber.Ctx) error {
-	categoryID := ctx.Query("category_id")
-	var categoryIDInt *int
-	if categoryID != "" {
-		categoryIDParsed, err := strconv.Atoi(categoryID)
-		if err != nil {
-			return ctx.Status(fiber.StatusBadRequest).JSON(model.HTTPErrorResponse("invalid category id"))
-		}
-
-		categoryIDInt = &categoryIDParsed
+	getRequest, err := getProductParam(ctx)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.HTTPErrorResponse(err.Error()))
 	}
 
-	products, err := c.productSvc.GetAll(categoryIDInt)
+	products, err := c.productSvc.GetAll(getRequest)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(model.HTTPErrorResponse(err.Error()))
 	}
@@ -38,16 +30,16 @@ func (c *Controller) GetAll(ctx *fiber.Ctx) error {
 }
 
 func (c *Controller) Create(ctx *fiber.Ctx) error {
-	productRequest := &model.ProductRequest{}
-	if err := ctx.BodyParser(productRequest); err != nil {
+	createRequest := &model.CreateProductRequest{}
+	if err := ctx.BodyParser(createRequest); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(model.HTTPErrorResponse(err.Error()))
 	}
 
-	if err := utils.Validator(productRequest); err != nil {
+	if err := utils.Validator(createRequest); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(model.HTTPErrorResponse(err.Error()))
 	}
 
-	err := c.productSvc.Create(productRequest)
+	err := c.productSvc.Create(createRequest)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(model.HTTPErrorResponse(err.Error()))
 	}

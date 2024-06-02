@@ -50,7 +50,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 ### Customer Service
 
-1. Register 
+1. **Register** 
 
     `POST /customer`
 
@@ -82,7 +82,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
         | field |type | required? (Y/N) | description |
         | :---: | :---: | :---: | :---: |
-        | message | string | Y | success message |
+        | message | string | Y | response message |
 
         example:
 
@@ -107,7 +107,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         }
         ```
 
-2. Login
+2. **Login**
 
     `POST /customer/login`
 
@@ -132,7 +132,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         | field |type | required? (Y/N) | description |
         | :---: | :---: | :---: | :---: |
         | message | string | Y | response message |
-        | data | object | Y | response data |
+        | data | object | N | response data |
         | username | string | Y | username of the customer |
         | nama | string | Y | name of the customer |
         | token | string | Y | token authentication |
@@ -158,7 +158,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         }
         ```
 
-3. Logout
+3. **Logout**
 
     `POST /customer/logout`
 
@@ -197,7 +197,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 ## Category Service
 
-1. Create
+1. **Create**
 
     `POST /category`
 
@@ -226,7 +226,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
         | field |type | required? (Y/N) | description |
         | :---: | :---: | :---: | :---: |
-        | message | string | Y | success message |
+        | message | string | Y | response message |
 
         example:
 
@@ -244,7 +244,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         }
         ```
 
-2. Get All
+2. **Get All**
 
     `GET /categories`
 
@@ -264,7 +264,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         | field |type | required? (Y/N) | description |
         | :---: | :---: | :---: | :---: |
         | message | string | Y | response message |
-        | data | array | Y | list of categories |
+        | data | array | N | list of categories |
 
         example:
 
@@ -290,7 +290,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 ## Product Service
 
-1. Create
+1. **Create**
 
     `POST /product`
 
@@ -345,13 +345,13 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         }
         ```
 
-2. Get All
+2. **Get All**
 
     `GET /products`
 
     ```sh
-    curl --location 'http://localhost:3000/products' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6Im1pY2tleW1vdXNlIiwiZXhwIjoxNzE3MjE2MjM1fQ.lKyY15QFU4k0ZTHWGkdR_lB8aArpD7ObVOGh9LjfsAs'
+    curl --location 'http://localhost:3000/products?category_id=2&page=2&limit=2' \
+    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VybmFtZSI6Im1pbm5pZW1vdXNlIiwiZXhwIjoxNzE3Mjk1MDI3fQ.oLqQ6Pnvz4PrQ5FJOtcjAYa3VzM_U9HhdEvDYF0PArs'
     ```
 
     - Header
@@ -360,17 +360,25 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         | :---: | :---: | :---: | :---: |
         | Authorization | string | Y | token authentication |
 
+    - Request Query Parameters
+
+        | field |type | required? (Y/N) | description |
+        | :---: | :---: | :---: | :---: |
+        | category_id | number | N | category id of the products |
+        | limit | number | N | limit of the products |
+        | page | number | N | page of the products |
+
     - Response Body
 
         | field |type | required? (Y/N) | description |
         | :---: | :---: | :---: | :---: |
         | message | string | Y | response message |
-        | data | array | Y | list of products |
+        | data | array | N | list of products |
         | id | number | Y | id of the product |
         | name | string | Y | name of the product |
         | price | number | Y | price of the product |
         | stock_quantity | number | Y | stock quantity of the product |
-        | category_id | number | Y | category id of the product |
+        | category | string | Y | category of the product |
         | description | string | N | description of the product |
 
         example:
@@ -381,12 +389,20 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
             "message": "success",
             "data": [
                 {
-                    "id": 1,
+                    "id": 6,
                     "name": "Mothercare Multi Cat Long-Sleeved T-Shirts",
                     "price": 459900,
                     "stock_quantity": 7,
-                    "category_id": 2,
+                    "category": "Fashion",
                     "description": "Baby cloting 3 pcs per pack for 12-18 months old baby girl."
+                },
+                {
+                    "id": 7,
+                    "name": "Nylon Solid Color Backpack",
+                    "price": 287000,
+                    "stock_quantity": 7,
+                    "category": "Fashion",
+                    "description": "Women Girl Fasihon Nylon Solid Color Backpack. Capacity 20-35L using zipper"
                 }
             ]
         }
@@ -394,7 +410,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         
 ## Cart Service
 
-1. Create
+1. **Create**
 
     `POST /cart`
 
@@ -434,7 +450,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         | field |type | required? (Y/N) | description |
         | :---: | :---: | :---: | :---: |
         | message | string | Y | response message |
-        | data | object | Y | response data |
+        | data | object | N | response data |
         | id | number | Y | id of the cart |
         | customer_id | number | Y | id of the customer |
         | status | string | Y | status of the cart |
@@ -475,7 +491,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         }
         ```
 
-2. Get All By Customer
+2. **Get All By Customer**
 
     `GET /carts`
 
@@ -501,7 +517,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         | field |type | required? (Y/N) | description |
         | :---: | :---: | :---: | :---: |
         | message | string | Y | response message |
-        | data | array | Y | list of carts |
+        | data | array | N | list of carts |
         | id | number | Y | id of the cart |
         | customer_id | number | Y | id of the customer |
         | status | string | Y | status of the cart |
@@ -544,7 +560,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         }
         ```
 
-3. Delete cart item By ID
+3. **Delete cart item By ID**
 
     `DELETE /cart/{id}`
 
@@ -582,7 +598,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 
 ## Transaction Service
 
-1. Checkout
+1. **Checkout**
 
     `POST /transaction`
 
@@ -614,7 +630,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         | field | type | required? (Y/N) | description |
         | :---: | :---: | :---: | :---: |
         | message | string | Y | response message |
-        | data | object | Y | response data |
+        | data | object | N | response data |
         | id | number | Y | id of the transaction |
         | idempotency_key | string | Y | idempotency key of the transaction |
         | customer_id | number | Y | id of the customer |
@@ -663,7 +679,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         }
         ```
 
-2. Get By ID
+2. **Get By ID**
 
     `GET /transaction`
 
@@ -689,7 +705,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
         | field | type | required? (Y/N) | description |
         | :---: | :---: | :---: | :---: |
         | message | string | Y | response message |
-        | data | object | Y | response data |
+        | data | object | N | response data |
         | id | number | Y | id of the transaction |
         | idempotency_key | string | Y | idempotency key of the transaction |
         | customer_id | number | Y | id of the customer |

@@ -26,14 +26,24 @@ func (p *productRepoImpl) Create(product *model.ProductEntity) error {
 	return nil
 }
 
-func (p *productRepoImpl) GetAll(categoryID *int) ([]*model.ProductResponse, error) {
+func (p *productRepoImpl) GetAll(request *model.GetProductRequest) ([]*model.ProductResponse, error) {
 	products := make([]*model.ProductResponse, 0)
 	params := make([]interface{}, 0)
 	
 	query := "SELECT p.id, p.name, p.description, p.price, p.stock_quantity, c.name FROM products AS p JOIN categories AS c ON p.category_id = c.id WHERE TRUE"
-	if categoryID != nil {
+	if request.CategoryID != nil {
 		query += " AND p.category_id = ?"
-		params = append(params, categoryID)
+		params = append(params, request.CategoryID)
+	}
+
+	if request.Limit != 0 {
+		query += " LIMIT ?"
+		params = append(params, request.Limit)
+	}
+
+	if request.Page != 0 {
+		query += " OFFSET ?"
+		params = append(params, (request.Page-1)*request.Limit)
 	}
 
 	res, err := p.db.Query(query, params...)

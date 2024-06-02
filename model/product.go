@@ -17,12 +17,18 @@ type ProductEntity struct {
 	UpdatedAt     time.Time       `db:"updated_at"`
 }
 
-type ProductRequest struct {
+type CreateProductRequest struct {
 	Name          string  `json:"name" validate:"required"`
 	Price         float64 `json:"price" validate:"required"`
 	StockQuantity int     `json:"stock_quantity" validate:"required"`
 	CategoryID    int     `json:"category_id" validate:"required"`
 	Description   string  `json:"description,omitempty"`
+}
+
+type GetProductRequest struct {
+	CategoryID *int `json:"category_id,omitempty"`
+	Limit      int  `json:"limit,omitempty"`
+	Page       int  `json:"page,omitempty"`
 }
 
 type ProductResponse struct {
