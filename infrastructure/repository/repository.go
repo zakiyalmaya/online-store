@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
@@ -181,9 +182,20 @@ func RedisClient(redisHost, redisPort string) *redis.Client {
 	}
 
 	redcl := redis.NewClient(option)
-	if err := redcl.Ping(context.Background()).Err(); err != nil {
-		log.Panicln("error connect to redis: ", err.Error())
-		panic(err)
+	ctx := context.Background()
+
+	for i := 0; i < 10; i++ {
+		_, err := redcl.Ping(ctx).Result()
+		if err == nil {
+			log.Println("Connected to Redis")
+			break
+		}
+		
+		log.Println("Failed to connect to Redis. Retrying...")
+		time.Sleep(2 * time.Second)
+		if i == 9 {
+			log.Panicln("Could not connect to Redis:", err)
+		}
 	}
 
 	return redcl

@@ -14,10 +14,16 @@ services:
       - .:/app  # Map current directory on host to /app in container
       - ./online_store.db:/app/online_store.db  # Map ./online_store.db on host to /app/online_store.db in container
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
 
   redis:
     image: redis:6.2
     restart: always
     ports:
       - "6379:6379"  # Map port 6379 in container to port 6379 on the host
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

@@ -8,14 +8,17 @@ WORKDIR /app
 
 COPY go.mod go.sum ./
 
-# Install dependencies
 RUN go mod download
 
 COPY . .
 
-RUN go build -o main .
+RUN go build -o online_store_app
 
-# Expose port
+RUN echo "Files in /app:" && ls -la /app
+RUN echo "Environment variables:" && env
+
+RUN chmod +x /app/online_store_app
+
 EXPOSE 3000
 
-CMD ["./main"]
+CMD ["./online_store_app"]
