@@ -44,7 +44,29 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
     ```
 
 2. Via docker image
+    - Pull the Docker image from Docker Hub
+    ```sh
+    docker pull zakiyalmaya/online-store_app:latest
+    docker pull zakiyalmaya/redis:6.2
+    ```
+    
+    - Create a Custom Network. Ensure that both the Redis container and the app container are on the same Docker network.
+    ```sh
+    docker network create online-store-network
+    ```
 
+    - Run the app container
+    ```sh
+    docker run -d --name redis --network online-store-network zakiyalmaya/redis:6.2
+    docker run -d --name app --network online-store-network zakiyalmaya/online-store_app:latest
+    ```
+
+    - Run the `.\online_store_app` file using this command
+    ```sh
+    .\online_store_app
+    ```
+    
+    - Visit http://localhost:3000 in your browser
 
 ## API CONTRACT
 
