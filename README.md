@@ -33,7 +33,7 @@ ERD diagram can be found [here](./ERDOnlineStoreApp.jpg)
 1. Via GitHub Repository
     - Clone the git repository
     ```sh
-    https://github.com/zakiyalmaya/assetfindr-assignment.git
+    https://github.com/zakiyalmaya/online-store.git
     ```
     
     - Make sure you have installed Redis and are running Redis locally. If not, you can install it using the link here: https://redis.io/docs/latest/operate/oss_and_stack/install/
